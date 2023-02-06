@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5d1fa2bb-dee2-4d61-a77e-235a2dc15ccd}</ProjectGuid>
+    <ProjectType>HR32Bit</ProjectType>
+    <ChipType>HR8P506FHLQ</ChipType>
+    <ChipConfig>FFAA00554080BF3FBF7F40804004BFF9D31E2CE1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</ChipConfig>
+    <TargetPath>.\Obj\</TargetPath>
+    <GCCOptimizationSelect>O0</GCCOptimizationSelect>
+    <GCCCExtraOption>
+    </GCCCExtraOption>
+    <GCCCDefine>
+    </GCCCDefine>
+    <GCCCUndefine>
+    </GCCCUndefine>
+    <GCCCInclude>..\App,..\..\..\..\StarUp,..\..\..\..\Library\Include,..\..\..\..\CMSIS,C:\Keil\ARM\INC\HR</GCCCInclude>
+    <AssemblyName>adc_demo</AssemblyName>
+    <Name>adc_demo</Name>
+    <RootNamespace>adc_demo</RootNamespace>
+    <ToolChain>ES32CC v1.0.0.8</ToolChain>
+    <GCCRamAddress>0x20000000</GCCRamAddress>
+    <GCCRamSize>0x00002000</GCCRamSize>
+    <GCCRomAddress>0x00000000</GCCRomAddress>
+    <GCCRomSize>0x00009000</GCCRomSize>
+    <Crystal>8</Crystal>
+    <DebugTool>DAPLink</DebugTool>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>debug\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Filter Include="StartUp" />
+    <Filter Include="CMSIS" />
+    <Filter Include="Library" />
+    <Filter Include="PlatForm" />
+    <Filter Include="App" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\CMSIS\system_HR8P506.c">
+      <SubType>Code</SubType>
+      <Filter>CMSIS</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\iDesigner_StartUp\InitRam.c">
+      <SubType>Code</SubType>
+      <Filter>StartUp</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\iDesigner_StartUp\HR8P506_startup.S">
+      <SubType>Code</SubType>
+      <Filter>StartUp</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\hr8p506_iap_table.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_adc.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_euart.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_gpio.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_iic.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_lcd.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_led.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_printf.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_rtc.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_scs.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_scu.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_spi.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_timer.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_uart.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\..\..\..\Library\Source\lib_wdt.c">
+      <SubType>Code</SubType>
+      <Filter>Library</Filter>
+    </Compile>
+    <Compile Include="..\APP\adc.c">
+      <SubType>Code</SubType>
+      <Filter>App</Filter>
+    </Compile>
+    <Compile Include="..\APP\led.c">
+      <SubType>Code</SubType>
+      <Filter>App</Filter>
+    </Compile>
+    <Compile Include="..\APP\main.c">
+      <SubType>Code</SubType>
+      <Filter>App</Filter>
+    </Compile>
+    <Compile Include="..\APP\timer.c">
+      <SubType>Code</SubType>
+      <Filter>App</Filter>
+    </Compile>
+    <Compile Include="..\PlatForm\irqhandler.c">
+      <SubType>Code</SubType>
+      <Filter>PlatForm</Filter>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\..\CMSIS\core_cm0.h">
+      <SubType>Content</SubType>
+      <Filter>CMSIS</Filter>
+    </Content>
+    <Content Include="..\..\..\..\CMSIS\core_cmFunc.h">
+      <SubType>Content</SubType>
+      <Filter>CMSIS</Filter>
+    </Content>
+    <Content Include="..\..\..\..\CMSIS\core_cmInstr.h">
+      <SubType>Content</SubType>
+      <Filter>CMSIS</Filter>
+    </Content>
+    <Content Include="..\..\..\..\CMSIS\HR8P506.h">
+      <SubType>Content</SubType>
+      <Filter>CMSIS</Filter>
+    </Content>
+    <Content Include="..\..\..\..\CMSIS\system_HR8P506.h">
+      <SubType>Content</SubType>
+      <Filter>CMSIS</Filter>
+    </Content>
+    <Content Include="..\APP\adc.h">
+      <SubType>Content</SubType>
+      <Filter>App</Filter>
+    </Content>
+    <Content Include="..\APP\led.h">
+      <SubType>Content</SubType>
+      <Filter>App</Filter>
+    </Content>
+    <Content Include="..\APP\main.h">
+      <SubType>Content</SubType>
+      <Filter>App</Filter>
+    </Content>
+    <Content Include="..\APP\timer.h">
+      <SubType>Content</SubType>
+      <Filter>App</Filter>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(registry:HKEY_CURRENT_USER\Software\ICHAIER\HRIDE4.0\1.0_Config\MSBuild\SafeImports@HRCC)" />
+</Project>

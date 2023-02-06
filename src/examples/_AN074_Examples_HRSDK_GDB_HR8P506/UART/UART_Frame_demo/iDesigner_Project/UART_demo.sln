@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# HRIDE Solution File, Format Version 11.00
+Project("{39F91901-BA3E-4766-9ADB-AC16DDCC0D9C}") = "UART_demo", "UART_demo.hrccproj", "{9D2829CD-FADB-4834-BED8-4639CC282337}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D2829CD-FADB-4834-BED8-4639CC282337}.Debug|x86.ActiveCfg = Debug|x86
+		{9D2829CD-FADB-4834-BED8-4639CC282337}.Debug|x86.Build.0 = Debug|x86
+		{9D2829CD-FADB-4834-BED8-4639CC282337}.Release|x86.ActiveCfg = Release|x86
+		{9D2829CD-FADB-4834-BED8-4639CC282337}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

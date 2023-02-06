@@ -1,0 +1,284 @@
+HR8P506库函数修改记录
+
+1.	StartUp 文件夹分分成MDK_StartUp和iDesigner_StartUp,分别存放MDK和iDesigner的启动文件。Project文件夹分成MDK_Project和iDesigner_Project,分别存放MDK和iDesigner的工程文件。
+2.	GPIO库函数增加接口
+	void GPIO_SetBit(GPIO_Pin Pin);
+	void GPIO_ResetBit(GPIO_Pin Pin);
+	void GPIO_ToggleBit(GPIO_Pin Pin);
+	分别对GPIO进行置位，清零，取反操作。
+
+3. 	lib_wdt.h 修改  " #define WDT_RegUnLock()		(WDT->LOCK.Word = 1ACCE551)"为"#define WDT_RegUnLock()		(WDT->LOCK.Word = 0x1ACCE551)"。
+
+4.文件作者修改为ESM Application Team 
+
+5.所有MDK工程加入--bitband功能。
+
+
+6.对lib_timer.h,lib_timer.c库函数进行了较大幅度的修改，并对相关DEMO程序进行了修改。
+7.在lib_SCU.c中增加了SCU_OpenXTAL()函数，用来开启外部时钟。
+
+8 .if(ADC_InitStruct->VREFP == ADC_VREFP_IO) 
+ADC->CON1.VRBUF_EN = ENABLE;
+ 
+修改为
+if((ADC_InitStruct->VREFP == ADC_VREFP_IO)||(ADC_InitStruct->VREFP == ADC_VREFP_VREF)) 
+ADC->CON1.VRBUF_EN = ENABLE;
+else
+ADC->CON1.VRBUF_EN = DISABLE;
+
+
+9.lib_scu.c,lib_scu.h  添加DeviceClock_Config 函数，以函数入参形式配置是否使能外设时钟。删除使能或不使能外设时钟的宏定义。
+
+void DeviceClock_Config(SUC_TYPE_Periph tppe_periph ,TYPE_FUNCEN NewState );
+
+10. ADC初始化结构体变量中的VRBUF_EN在初始化函数中已固定配置，可以删除VRBUF_EN变量以及相关的赋值。  已经删除ADC_InitStruType中的VRBUF_EN。
+
+11. lib_timer.c中增加PRECNT寄存器的设置函数，删除T16Nx_BaseInit函数中最后两句 T16Nx->PRECNT.PRECN=0和 T16Nx->CON0.ASYWEN =T16Nx_BaseInitStruct->T16Nx_ASYWEN;  在CNT和PRECNT设置函数中增加T16Nx_ASYWEN关闭和打开，即写之前打开写使能，写完后关闭写使能。修改完毕。
+12. /* LVD中断标志位清除 */
+#define SCU_LVDClearIFBit()	(SCU->LVDCON.IF = 0)改为
+#define SCU_LVDClearIFBit()	(SCU->LVDCON.IF = 1)
+
+13. 增加PLL配置函数
+
+/***************************************************************
+函数名：PLLClock_Config
+描  述：PLL时钟配置,并设置PLL时钟为系统时钟
+输入值：pll_en:是否开启PLL，pll_origin：pll时钟源选择，pll_out：pll输出频率选择，sys_pll：系统时钟是否使用PLL时钟
+输出值：无
+返回值：无
+***************************************************************/
+void PLLClock_Config(TYPE_FUNCEN pll_en , SCU_PLL_Origin  pll_origin ,SCU_PLL_Out pll_out,TYPE_FUNCEN sys_pll )
+
+14.demo程序同步库函数修改
+-------------------------------------------------------------------------
+V1.2.1
+-------------------------------------------------------------------------
+15.为所有工程添加InitRam.c，并且修改_Startup.S文件，增加InitRam
+函数，修改flash_demo和Iapdemo，使Flash相关操作在RAM中运行。
+16.修改了hr8p506_iap_table.c和hr8p506_iap_table.h,增加了IAPRead函数
+17.修改了HR8P506_startup.s, 增加了IP模块校准值加载代码
+18.更新了InitRam.c函数
+19.更新了system_HR8P506.c 中SystemCoreClock = 16000000
+20.更新了RTC->CON.PON 清零在RTC初始化时的顺序
+21.修改了项目中InitRam.c函数存放路径, 从原先的Library文件夹改到iDesigner_StartUp文件夹
+
+
+2017.6.27
+1.修改Library文件夹内文本格式，符合Linux编程规范。
+2.检测并修改库文件中清除中断标志位的函数。清除时由以前的 “|=” 改为 “=”。
+
+2017.7.4
+1.去除RTC里面不支持bitband的寄存器的位定义，并修改相应的demo
+2.宏定义WDT_Clear()改为{WDT_RegUnLock();WDT->INTCLR.Word = 0;WDT_RegLock();}
+2017.7.5
+1.去除头文件里RTC_YMDW的位定义，并修改相关demo程序
+
+2017.7.10
+	
+1.修改lib_adc.c ，lib_adc.h 增加ADC_GetIEStatus函数和 ADC_TYPE_IE 枚举体 。
+2.lib_uart.c 增加UART_AutoBaudConfig，自动检测并设置波特率。
+3.lib_euart.c 修改了发送接收函数，U7816变为EUART。
+-------------------------------------------------------------------------
+V1.2.2
+-------------------------------------------------------------------------
+2017.7.28
+1."SCU_OpenXTAL"函数增加“SCU->SCLKEN0.XTAL_LP = 0;”
+2017.7.32
+1."PLLClock_Config"函数增加“SCU->SCLKEN0.XTAL_LP = 0;”
+------------------------------------------------------------------------
+V2.00 2018.01.19
+------------------------------------------------------------------------
+2017.9.29
+1.修改ADC demo中ADC初始化分频比，使其符合HR8P506_Datasheet附录中的“ADC转换时钟源选择表”。
+2.修改了sleep demo，功能为：深睡眠、按键唤醒后灯闪一下后继续深睡眠。没有用到的GOIO设置为输入输出均关闭。
+3.在HR8P506的头文件的最后增加唯一码定义。
+4.增加IIC_Master_And_Slave_demo。
+
+2017.10.11
+1."ADC_Init"函数中"ADC->CHS.VDD5_FLAG_EN = ADC_InitStruct->VDD5_EN;"修改为"ADC->CHS.VDD5_FLAG_EN = 0",并把相关的demo中"x.VDD5_EN = ENABLE;"修改为"x.VDD5_EN = DISABLE;"
+
+2017.10.25
+1.增加RTC误差补偿demo。
+2.增加7816demo。
+3.修改了IIC demo，用IIC发送数据时增加了ACK校验。
+
+删除flash例程和旧模块例程
+删除lib_flashiap.c和lib_flashiap.h
+
+
+2017/12/06
+（编译器版本：keil V4.73.0.0（优化等级O0）/iDesigner V4.12.138 （优化等级O0））
+1.修改print_demo的实现方式；
+2.PLL_demo中main函数“uint8_t clock_cnt = 0;”删除；
+3.OTHER中的MOTOR_demo中"lib_rtc.c"文件移除；
+4.将IIC的DEMO中IIC_Master_Interrupt_demo中"main.h"文件中加入"#include "string.h""；
+5.TIMER_T16Nx_Counter_LED_demo的idesigner工程中--bitband除去；
+6.删除"lib_flashiap.h"、"lib_flashiap.c"文件。
+
+
+2017.12.27
+（编译器版本：keil V4.73.0.0（优化等级O0）/iDesigner V4.12.138 （优化等级O0））
+I2C从机例程中使能时钟自动下拉功能，更改相关引脚设置
+
+2018.01.15
+（编译器版本：keil V4.73.0.0（优化等级O0）/iDesigner V4.1.2.138 （优化等级O0））
+1.UART_Byte_demo，UART_Euart_demo：
+  a.修改了mian函数中，串口循环发送的程序逻辑顺序，
+  b.串口循环发送程序：将获取发送完成中断标志位的判断条件由SET更改为RESET
+  c.串口循环发送程序：增加清除发送完成中断标志位的操作
+
+2018.01.17
+（编译器版本：keil V4.73.0.0（优化等级O0）/iDesigner V4.1.2.138 （优化等级O0））
+1.lib_gpio.c库：
+  a.修改了GPIO_Init()函数，原程序中在端口设置为数字输出时，屏蔽了弱上拉、下拉的配
+    置，现修改为，只要端口状态为数字端口，弱上拉、下拉的配置都有效。
+2.IIC_Master_Interrupt_demo、IIC_Master_Scan_demo：
+  a.将IIC通信端口的配置更改为，弱上拉使能，并使能开漏输出
+3.IIC_Master_Interrupt_demo：
+  a.将IIC0_ReadByte()函数中，uint8_t buf更改为uint8_t buf = 0，解除编译警告。
+
+2018.01.17
+（编译器版本：keil V4.73.0.0（优化等级O0）/iDesigner V4.1.2.138 （优化等级O0））
+1.lib_timer.c库：
+  a.将uint16_t T32Nx_GetCNT()函数，修改为uint32_t T32Nx_GetCNT()。
+
+2018.01.19
+（编译器版本：keil V4.73.0.0（优化等级O0）/iDesigner V4.1.2.138 （优化等级O0））
+1.lib_gpio.c库：
+  a.封装了GPIO_TX1Config(),GPIO_TX0Config()函数
+  b.lib_gpio.h中封装了UART_TYPE_TX0Sx;UART_TYPE_TX1Sx;UART_TYPE_TX1PS;UART_TYPE_TX0PS;UART_TYPE_TXPLV五组结构体
+2.lib_timer.c库：
+  a.封装了BUZC_Frequence()函数。
+3.增加UART_PWM_demo（基于38KHz PWM红外调制）
+---------------------------------------------------------------------------------------------------
+V2.01 2018.05.08
+---------------------------------------------------------------------------------------------------
+2018.03.27（LuF）
+（编译器版本：keil V4.73.0.0（优化等级O0）/iDesigner V4.1.2.138 （优化等级O0））
+1.ADC_AutoCompare_demo，ADC_Hardcontrol_demo，ADC_Softcontrol_demo，adc.c文件中
+  void ADCInit(void)函数里“x.VDD5_EN = DISABLE;”语句被删除
+2.lib_adc.h文件，ADC_InitStruType/*ADC初始化结构体*/中，删除ADC_TYPE_VDD5_FLAG_EN VDD5_EN;语句
+  并删除该语句所有相关的配置与定义
+
+   
+
+2018.05.02（Zhuxf）
+（编译器版本：keil V4.73.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0））
+1.lib_rtc 增加 void RTC_ClearITPendingBit(RTC_Interrupt_Source src);删除void RTC_ClearAllITFlag(void);
+2.去除SLEEP_KeyInturrept_demo
+3.修改T16Nx->CON0.ASYWEN的配置bug
+
+2018.05.03（Ditz）
+（编译器版本：keil V4.73.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0））
+1.低功耗中增加了LVD唤醒例程。
+2.低功耗中增加了RTC秒唤醒例程。
+------------------------------------------------------------------------
+V2.02 2018.08.13
+------------------------------------------------------------------------
+2018.07.09（zhuxf）
+（编译器版本：keil V4.73.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0））
+1.为了适应idesigner更新，修改了iDesigner_StartUp
+2.增加了基于BootISP开发BootLoader的demo程序
+
+------------------------------------------------------------------------
+V2.03 2019.01.03
+------------------------------------------------------------------------
+2019.01.03（Zhuxf）
+（编译器版本：keil V4.73.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0））
+1."__WFI();"前增加"__NOP();"
+2.请挂起标识语提到休眠语句前
+
+------------------------------------------------------------------------
+V2.04 2019.08.15
+------------------------------------------------------------------------
+2019.08.08（Lisq）
+（编译器版本：keil V4.72.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0）/IAR V8.11.1（优化等级00））
+1.对所有demo进行IAR工程可用移植；
+2.int fputc(int ch, FILE *f)增加清除中断UART_ClearITPendingBit(UART_TypeDef *UARTx, UART_TYPE_FLAG UART_Flag)；
+3.void PINT_ClearITFlag(GPIO_Pin Pin)删除value |= (1 << Pintx)操作；
+4.CleanTarget.bat增加批量删除IAR工程debug临时文件命令；
+5.PLL倍频到48MHz时，增加时钟滤波器旁路操作SCU->SCLKEN0.CLKFLT_BY=0x55;
+6.GPIO_Interrupt_demo中加入PB9按键的GPIO口初始化。
+
+2019.08.08（wangyq）
+（编译器版本：keil V4.72.0.0（优化等级O0）/ IAR V8.11.1（优化等级00））
+7.ClassB代码包与例程共用一个启动文件(Keil/IAR)，删除startup_HR8P506_STL.s文件, CHECKSUM放到ES_STLcpustartKEIL.s;
+8.ClassB默认使用PLL 48MHz(时钟源HRC)，删除PLL测试相关代码;
+9.ClassB支持Full Ram自检;
+10.重新格式化刷新ClassB代码。
+
+------------------------------------------------------------------------
+V2.05 2019.11.04
+------------------------------------------------------------------------
+2019.10.08（Lisq）
+（编译器版本：keil V4.72.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0）/IAR V8.11.1（优化等级00））
+1.库函数lib_timer.c中对寄存器T32Nx->CON1.CAPL0、T32Nx->CON1.CAPL1的操作修改至函数T32Nx_CapInit的最后进行。
+
+
+------------------------------------------------------------------------
+V2.06 2020.01.07
+------------------------------------------------------------------------
+2019.11.29（Lisq）
+（编译器版本：keil V4.72.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0）/IAR V8.11.1（优化等级00））
+1.添加例程：SCU同步启动两T16N，输出四路同步中心对齐PWM。
+
+2019.12.25（Lisq）
+（编译器版本：keil V4.72.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0）/IAR V8.11.1（优化等级00））
+1.UART例程RX引脚配置为内部弱上拉；
+2.lib_adc.c添加ADC模拟通道选择接口；
+3.添加ADC模拟通道切换例程；
+4.添加通信速率400K的IIC例程；
+5.更正IICx_TACK()、IICx_TNACK()函数寄存器配置；
+6.更正LED_PixelWriteByte()、LED_PixelWriteHalfWord()函数配置；
+7.删除SCU_LVD多余函数宏定义SCU_LVDVS_LVDIN()。
+
+2020.01.09（Lisq）
+（编译器版本：keil V4.72.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0）/IAR V8.11.1（优化等级00））
+1.添加打开除IAP模块以外所有外设时钟的函数接口
+
+2020.04.01（Lisq）
+（编译器版本：keil V4.72.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0）/IAR V8.11.1（优化等级00））
+1.PWM相关例程，GPIO初始化放在Timer初始化后
+
+------------------------------------------------------------------------
+V2.07 2021.07.28
+------------------------------------------------------------------------
+2021.03.29（zhuxf）
+（编译器版本：keil V4.72.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0）/IAR V8.11.1（优化等级00））
+1.PLLClock_Config函数：PLL倍频到48MHz时，增加时钟滤波器旁路操作；其它频率不旁路。
+2.SCU_SysClkSelect函数：增加时钟滤波器不旁路操作。
+2021.07.28（biyq）
+（编译器版本：keil V4.72.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0）/IAR V8.11.1（优化等级00））
+1. 修改WDT模块例程，将WDT计数时钟由PCLK更改为LRC
+2021.08.24（biyq）
+（编译器版本：keil V4.72.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0）/IAR V8.11.1（优化等级00））
+1. 修改IIC模块头文件，枚举类型IIC_TYPE_RECMODE中增加成员IIC_RecMode_6 = 0x6以及IIC_RecMode_7 = 0x7
+2. 优化IIC模块例程，分为三个例程组，IIC_E2prom_demo，IIC_Master_And_Slave_demo及IIC_Master_Interrupt_demo分别用于演示擦写E2PROM以及与ES-Bridge通信
+3. 优化SPI模块例程，分为两个例程组，SPI_demo及SPI_Master_And_Slave_demo分别用于演示擦写E2PROM以及与ES-Bridge通信
+2021.08.25（biyq）
+（编译器版本：keil V4.72.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0）/IAR V8.11.1（优化等级00））
+1. IIC及SPI模块例程中添加iDesigner工程
+
+------------------------------------------------------------------------
+V2.08 2021.10.11
+------------------------------------------------------------------------
+2021.10.09（Lisq）
+（编译器版本：keil V4.72.0.0（优化等级O0）/iDesigner V4.2.3.179 （优化等级O0）/IAR V8.11.1（优化等级00））
+1. 例程PWM_T16Nx_SYNC_Doub_Cent_demo增加中断服务函数T16N1_IRQHandler；
+2. GPIO库函数设置IO为模拟口时，强制关闭内部弱上/下拉。
+
+------------------------------------------------------------------------
+V2.09 2022.01.12
+------------------------------------------------------------------------
+2022.01.10（fengc）
+（编译器版本：keil V4.72.0.0（优化等级O0）/iDesigner V4.2.3.149 （优化等级O0）/IAR V8.11.1（优化等级00））
+1.增加单电池供电的深度休眠例程；
+2.修改RTC库写年错误bug。
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+
+
+
